@@ -8,11 +8,18 @@
 
 import UIKit
 
-class StatsViewController: UIViewController {
 
+class StatsViewController: UIViewController {
+    var newStats : String?
+    @IBOutlet weak var statLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        if newStats != nil {
+            statLabel.text = newStats
+        }
+        
         // Do any additional setup after loading the view.
     }
 

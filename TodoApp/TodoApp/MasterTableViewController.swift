@@ -5,13 +5,35 @@
 //  Created by William Smith on 10/15/16.
 //  Copyright © 2016 William Smith. All rights reserved.
 //
+// Things that still need to be done:
+// - Check marks on cells are unchecked when going between views
+// - Add persistent storage, which should load the completed amount and the
+//   to do items when app is reloaded (should be done in viewDidLoad)
+// - Do autolayout
 
 import UIKit
 
-class MasterTableViewController: UITableViewController {
+var toDoItems : [String] = []
+var doneCount = 0
 
+class MasterTableViewController: UITableViewController {
+    
+    var newTask : String? // for temporary transfer of new tasks via segue
+    
+    /*
+    override func viewDidAppear(_ animated: Bool) {
+    }
+    */
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if newTask != nil {
+            toDoItems.append(newTask!)
+            newTask = nil
+            self.tableView.reloadData()
+            print(toDoItems)
+        }
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -28,44 +50,48 @@ class MasterTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        return toDoItems.count
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as UITableViewCell
+        
+        cell.textLabel?.text = toDoItems[indexPath.row]
         return cell
     }
-    */
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let cell = self.tableView.cellForRow(at: indexPath) {
+            //tableView.deleteRows(at: [indexPath], with: .fade)
+            if cell.accessoryType == .checkmark {
+                cell.accessoryType = .none // undo the checkmark
+                doneCount -= 1
+            } else {
+                cell.accessoryType = .checkmark
+                doneCount += 1
+            }
+        }
+    }
 
-    /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
-    */
 
-    /*
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+            toDoItems.remove(at: indexPath.row) // remove from to do list
+            tableView.deleteRows(at: [indexPath], with: .fade) // remove from table
+//        } else if editingStyle == .insert {
+//            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
-    */
 
     /*
     // Override to support rearranging the table view.
@@ -82,14 +108,23 @@ class MasterTableViewController: UITableViewController {
     }
     */
 
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
+        // this assumes that the destination is indeed the stats view controller
+        // Needs to be fixed
+        if segue.identifier == "showStatsSegue" && doneCount != 0 {
+            let statView = segue.destination as! StatsViewController
+            
+            let statLabelUpdate = String(doneCount)
+            //print("stat label value: \(statLabelUpdate) ")
+            //print(statView.statLabel.text)
+            statView.newStats = statLabelUpdate
+            print(statLabelUpdate)
+        }
     }
-    */
-
 }
