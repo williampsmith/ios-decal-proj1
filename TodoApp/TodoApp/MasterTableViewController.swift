@@ -19,17 +19,11 @@ struct toDoItem {
 }
 
 var toDoItems : [toDoItem] = []
-
 var doneCount = 0
 
 class MasterTableViewController: UITableViewController {
     
     var newTask : String? // for temporary transfer of new tasks via segue
-    
-    /*
-    override func viewDidAppear(_ animated: Bool) {
-    }
-    */
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +52,7 @@ class MasterTableViewController: UITableViewController {
             
             if let date = item.date {
                 let lifetime = Date().timeIntervalSince(date)
-                if lifetime > 10 { // do not add item to purgedList
+                if lifetime > (3600 * 24) { // do not add item to purgedList
                     print("lifetime = \(lifetime). Max lifetime = 10")
                     print(toDoItems)
                 } else {
